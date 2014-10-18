@@ -1,5 +1,5 @@
 Docean
-=====
+======
 
 .. image:: https://img.shields.io/pypi/v/docean.svg
     :target: https://pypi.python.org/pypi/docean
