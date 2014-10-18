@@ -14,6 +14,11 @@ setup(
     author_email='jaimegildesagredo@gmail.com',
     license='Apache 2.0',
     packages=find_packages(exclude=['specs', 'specs.*']),
+    entry_points={
+        "console_scripts": [
+            "docean = docean.cli:main"
+        ]
+    },
     classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
