@@ -1,2 +1,2 @@
-https://github.com/jaimegildesagredo/docean/archive/master.zip
+https://github.com/jaimegildesagredo/finch/archive/master.zip
 docopt
