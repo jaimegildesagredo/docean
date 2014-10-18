@@ -4,7 +4,7 @@
 
 Usage:
     docean [options] ssh_keys add <name> <path>
-    docean [options] ssh_keys delete <id>
+    docean [options] ssh_keys delete <name>
 
 Options:
     -h --help  Shows these lines.
@@ -12,6 +12,7 @@ Options:
 """
 
 import json
+from functools import partial
 
 from docopt import docopt
 from booby import Model, fields
@@ -46,11 +47,41 @@ def main():
             ioloop.IOLoop.instance().start()
 
         if args['delete']:
-            print 'Deleting ssh key', args['<id>']
+            name = args['<name>']
+
+            print 'Deleting ssh key', name
+
+            ssh_keys.all(partial(_delete_key, ssh_keys, name))
+            ioloop.IOLoop.instance().start()
+
 
 
 def _parse_args():
     return docopt(__doc__)
+
+
+def _delete_key(ssh_keys, name, keys, error):
+    if error is not None:
+        raise error
+
+    for key in keys:
+        if key.name == name:
+            ssh_keys.delete(SshKey(id=key.id), _on_deleted)
+            print 'Bar'
+            break
+    else:
+        print 'Key not found'
+        ioloop.IOLoop.instance().stop()
+
+
+def _on_deleted(error):
+    ioloop.IOLoop.instance().stop()
+
+    if error is not None:
+        raise error
+
+    print 'Key deleted'
+
 
 
 def _on_public_key_added(ssh_key, error):
@@ -75,6 +106,9 @@ class SshKey(Model):
 class SshKeys(Collection):
     model = SshKey
     url = 'https://api.digitalocean.com/v2/account/keys'
+
+    def decode(self, response):
+        return json.loads(response.body)['ssh_keys']
 
 
 class DigitalOceanAuth(object):
